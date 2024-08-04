@@ -1,95 +1,55 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useEffect, useState } from 'react';
+import TodoForm from './components/TodoForm';
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+const Home = () => {
+    const [todos, setTodos] = useState<{ text: string, labels: string[], completed: boolean }[]>([]);
+
+    useEffect(() => {
+        // Load todos from localStorage on client-side
+        const savedTodos = localStorage.getItem('todos');
+        if (savedTodos) {
+            setTodos(JSON.parse(savedTodos));
+        }
+    }, []);
+
+    const addTodo = (todo) => {
+        const updatedTodos = [...todos, { ...todo, completed: false }]; // Set completed to false by default
+        setTodos(updatedTodos);
+        localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    };
+
+    const toggleCompletion = (index) => {
+        const updatedTodos = todos.map((todo, i) =>
+            i === index ? { ...todo, completed: !todo.completed } : todo
+        );
+        setTodos(updatedTodos);
+        localStorage.setItem('todos', JSON.stringify(updatedTodos));
+    };
+
+    return (
+        <div className='container'>
+            <h1>Todo Application</h1>
+            <TodoForm onAddTodo={addTodo} />
+            <br />
+            <ul>
+                {todos.map((todo, index) => (
+                    <li
+                        className='list-items'
+                        key={index}
+                        style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={todo.completed}
+                            onChange={() => toggleCompletion(index)}
+                        />
+                        {todo.text} - {todo.labels.join(', ')}
+                    </li>
+                ))}
+            </ul>
         </div>
-      </div>
+    );
+};
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
-}
+export default Home;
