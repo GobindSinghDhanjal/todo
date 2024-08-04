@@ -34,6 +34,7 @@ const LabelSelector: React.FC<LabelSelectorProps> = ({ onSelect }) => {
   return (
     <div className='labels'>
       <input
+      className='input-box'
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}

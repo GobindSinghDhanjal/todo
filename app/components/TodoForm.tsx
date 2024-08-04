@@ -32,7 +32,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onAddTodo }) => {
   return (
     <form onSubmit={handleSubmit}>
       <input
-        className="enter-todo"
+        className="enter-todo input-box"
         type="text"
         value={todo}
         onChange={(e) => setTodo(e.target.value)}
